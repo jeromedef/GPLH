@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+# Réglages à vérifier / compléter dans appwrite/.env sur le VPS
+# Puis appliquer avec :  cd appwrite && docker compose up -d
+# (pas "restart" : seul "up -d" relit le .env)
+# Noms vérifiés dans app/config/variables.php d'Appwrite 2.7.2.
+# ---------------------------------------------------------------------------
+
+# --- Domaine et HTTPS (Let's Encrypt, défi HTTP-01 : le port 80 doit être ouvert)
+_APP_ENV=production                        # sinon certbot tourne à blanc (--dry-run)
+_APP_DOMAIN=appwrite.VOTRE-DOMAINE.fr      # enregistrement A chez OVH -> IP du VPS
+_APP_EMAIL_CERTIFICATES=admin@VOTRE-DOMAINE.fr   # OBLIGATOIRE pour Let's Encrypt
+_APP_OPTIONS_FORCE_HTTPS=enabled           # défaut : disabled
+_APP_OPTIONS_ROUTER_PROTECTION=enabled
+
+# --- Console réservée à l'administrateur (défaut : enabled = 1 seul compte)
+_APP_CONSOLE_WHITELIST_ROOT=enabled
+_APP_CONSOLE_WHITELIST_EMAILS=admin@VOTRE-DOMAINE.fr   # ceinture + bretelles
+
+# --- E-mails de connexion via Google Workspace
+# Option A (recommandée pour un serveur) : relais SMTP Google, authentifié par l'IP du VPS
+#   Console d'admin Google > Applications > Google Workspace > Gmail > Routage
+#   > Service de relais SMTP : autoriser l'IP du VPS, exiger TLS.
+_APP_SMTP_HOST=smtp-relay.gmail.com
+_APP_SMTP_PORT=587
+_APP_SMTP_SECURE=tls
+_APP_SMTP_USERNAME=
+_APP_SMTP_PASSWORD=
+# Option B : boîte dédiée + mot de passe d'application (validation en 2 étapes requise)
+#   _APP_SMTP_HOST=smtp.gmail.com  _APP_SMTP_PORT=587  _APP_SMTP_SECURE=tls
+#   _APP_SMTP_USERNAME=noreply@VOTRE-DOMAINE.fr  _APP_SMTP_PASSWORD=<mot de passe d'application>
+_APP_SYSTEM_EMAIL_ADDRESS=noreply@VOTRE-DOMAINE.fr   # défaut : noreply@appwrite.io
+_APP_SYSTEM_EMAIL_NAME=Appwrite VOTRE-STRUCTURE
+# Délivrabilité : vérifier SPF (include:_spf.google.com) et activer DKIM
+# dans la console d'admin Google pour VOTRE-DOMAINE.fr.
+
+# --- Mot de passe PostgreSQL : NE PAS garder la valeur par défaut "password"
+# Procédure juste après l'installation (voir PROMPT_CLAUDE_CODE_LOCAL.md, étape A6) :
+#   NEW=$(openssl rand -hex 32)
+#   docker compose exec -T postgresql psql -U user -d appwrite \
+#     -c "ALTER USER \"user\" WITH PASSWORD '$NEW';"
+#   puis _APP_DB_PASS=$NEW dans ce fichier, et docker compose up -d
+_APP_DB_PASS=<valeur aléatoire générée>

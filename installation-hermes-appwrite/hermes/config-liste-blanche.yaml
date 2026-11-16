@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------------------
+# Hermes Agent - liste blanche des outils + réglages de sécurité
+# À fusionner dans %LOCALAPPDATA%\hermes\config.yaml (Windows natif)
+# ou ~/.hermes/config.yaml (Linux/macOS/WSL2).
+#
+# Source de vérité : toolsets.py (dictionnaire TOOLSETS, ligne 70) et
+# hermes_cli/tools_config.py (CONFIGURABLE_TOOLSETS, _get_platform_tools)
+# du dépôt NousResearch/hermes-agent, commit 3720662 du 13/11/2026.
+#
+# IMPORTANT : la liste blanche fonctionne par GROUPE d'outils (toolset).
+# Un nom d'outil isolé (ex. "write_file") dans cette liste est ignoré :
+# _get_platform_tools() ne retient que les clés de CONFIGURABLE_TOOLSETS
+# et des plugins.
+# ---------------------------------------------------------------------------
+
+platform_toolsets:
+  cli:
+    # Recherche et lecture (5 outils)
+    - web             # web_search, web_extract
+    - vision          # vision_analyze
+    - session_search  # session_search
+    - clarify         # clarify
+    # Organisation (6 outils)
+    - memory          # memory
+    - todo            # todo_list
+    - skills          # skills_list, skill_view, skill_manage
+    - delegation      # delegate_task
+    # Fichiers et exécution (11 outils) - risque élevé
+    - file            # read_file, write_file, patch, search_files
+    - terminal        # terminal, process_manage
+    - code_execution  # execute_code
+    - browser         # browser_exec, browser_cdp, browser_dialog, browser_vault
+    # Options (4 outils) - choix confirmé par l'utilisateur, computer_use compris
+    - cronjob         # cronjob_manage
+    - tts             # text_to_speech
+    - image_gen       # image_generate
+    - computer_use    # computer_use
+# Total : 16 groupes, 26 outils.
+# Tout le reste est coupé, notamment : video, video_gen, x_search, kanban,
+# connections, context_engine, discord, discord_admin.
+
+# --- Réglages de sécurité (issus de l'audit, voir ANALYSE_SECURITE.md) -------
+
+approvals:
+  mode: manual          # défaut "smart" = un LLM valide seul les commandes « bénignes »
+
+auth:
+  adopt_external_logins: false   # ne pas réutiliser les connexions Claude Code / Codex
+
+memory:
+  write_approval: true  # chaque écriture en mémoire vous est soumise
+
+skills:
+  write_approval: true  # chaque création/modification de skill vous est soumise
+
+security:
+  allow_lazy_installs: false     # pas de téléchargement PyPI à la volée
+
+browser:
+  use_real_profile: false        # navigateur isolé, jamais votre profil Chrome/Edge
+
+telemetry:
+  shared_metrics:
+    enabled: false
+    send: false
+
+# Ne JAMAIS lancer Hermes avec --yolo, ni taper /yolo ou Maj+Tab
+# (ces raccourcis coupent toutes les approbations).
