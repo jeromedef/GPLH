@@ -35,6 +35,7 @@
 | 6 | **Ports réseau** | 🔎 Rien n'écoute par défaut. Si on l'active, le webhook écoute sur toutes les interfaces (port 8644). | Ne pas activer le webhook ni le gateway (choix « terminal seulement »). |
 | 7 | **Installations à la volée** depuis PyPI | ✅ `security.allow_lazy_installs: true` | Passé à `false`. |
 | 8 | **Conseil d'exclusion antivirus** | 🔎 Le README suggère d'exclure un dossier de Windows Defender | **Ne pas le faire.** |
+| 9 | **Modèle sans garde-fous comme cerveau de l'agent** | Un modèle passé dans Heretic a perdu ses refus. Hermes, lui, exécute des commandes et peut piloter la souris et le clavier | Pour Hermes, utiliser la **version d'origine** du modèle. Réserver les modèles Heretic à la discussion dans LM Studio, sans outils. |
 
 ### Liste réelle des outils (lue dans le code, pas dans la documentation)
 ✅ `toolsets.py`, dictionnaire `TOOLSETS` (ligne 70) : **57 groupes d'outils (toolsets)** et **67 outils distincts**. L'écran `hermes tools` n'en propose que 25 groupes (`CONFIGURABLE_TOOLSETS`, `hermes_cli/tools_config.py:69`).

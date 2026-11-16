@@ -26,10 +26,13 @@ RÈGLES
   suppression, ouverture de ports, DNS, lancement de l'installateur Appwrite.
 
 MES CHOIX
-- PC : ZenBook-Jérôme, Windows 11, 32 Go de RAM, carte NVIDIA RTX dédiée.
+- PC : ZenBook Duo (UX8406CA), Windows 11, Intel Core Ultra 9 285H, 32 Go de RAM.
+  PAS de carte Nvidia : puce graphique Intel Arc 140T intégrée, qui partage la RAM
+  (LM Studio la voit via Vulkan, avec environ 17,9 Go utilisables).
+  LM Studio 0.4.28 est déjà installé, avec le moteur « Vulkan llama.cpp » actif.
 - Hermes : installation Windows native officielle (PowerShell, sans droits admin).
-  Usage général, sans données sensibles. Modèle local + Anthropic en secours.
-  Terminal seulement : PAS de gateway, PAS de service au démarrage.
+  Usage général, sans données sensibles. Modèle local via LM Studio + Anthropic
+  en secours. Terminal seulement : PAS de gateway, PAS de service au démarrage.
 - Liste blanche Hermes, 16 groupes / 26 outils : web, vision, session_search,
   clarify, memory, todo, skills, delegation, file, terminal, code_execution,
   browser, cronjob, tts, image_gen, computer_use. Tout le reste est coupé.
@@ -40,8 +43,9 @@ MES CHOIX
   J'ai des projets Supabase ET Firebase à importer.
 
 ================ PARTIE 1 : HERMES AGENT ================
-H1. Vérifie la machine : nvidia-smi (modèle de carte et VRAM), RAM, espace disque
-    libre sur C: (un modèle local pèse 15 à 25 Go). Dis-moi ce que tu trouves.
+H1. Vérifie la machine : RAM libre, espace disque libre sur C:, et que LM Studio
+    voit bien la puce Arc (Paramètres > Hardware : « 1 GPU detected with Vulkan »).
+    Ne lance pas nvidia-smi : il n'y a pas de carte Nvidia. Dis-moi ce que tu trouves.
 H2. Installe Hermes avec le script officiel :
     https://hermes-agent.nousresearch.com/install.ps1
     Télécharge-le dans un fichier, montre-le-moi, puis lance-le (PowerShell
@@ -49,13 +53,27 @@ H2. Installe Hermes avec le script officiel :
     refuse l'import de ~/.claude et ~/.codex, refuse la télémétrie, et réponds
     NON à l'installation et au démarrage automatique du gateway.
     N'ajoute AUCUNE exclusion à l'antivirus Windows Defender.
-H3. Modèle : lance « hermes model ». Utilise son estimateur matériel pour me dire
-    si un modèle local tourne correctement ici, et lequel. D'après le code, le
-    candidat probable avec 32 Go de RAM et une RTX de portable est « Qwen3.6
-    35B-A3B » (le seul modèle du catalogue marqué « validé »). Laisse l'estimateur
-    trancher. Contrainte : Hermes exige au moins 64 000 jetons de contexte
-    (MINIMUM_CONTEXT_LENGTH). Si le local est trop lent ou trop juste, dis-le-moi
-    franchement.
+H3. Modèle local, via LM Studio (déjà installé et vérifié sur la puce Arc) :
+    - N'utilise PAS les modèles du catalogue intégré de Hermes : le plus petit
+      fait 27 milliards de paramètres, trop lourd pour une puce intégrée.
+    - N'utilise PAS de modèle passé dans Heretic : Hermes dispose d'un terminal
+      et du contrôle souris/clavier, il lui faut un modèle qui garde ses refus.
+    - Dans LM Studio, télécharge la version d'ORIGINE de Qwen3 4B Instruct 2507
+      (GGUF, version Q4_K_M, environ 2,5 Go). Charge-la avec GPU Offload au
+      maximum et une longueur de contexte de 65 536 jetons : Hermes exige au
+      moins 64 000 jetons (MINIMUM_CONTEXT_LENGTH). Ce contexte occupe à lui
+      seul environ 9 à 10 Go de mémoire partagée : demande-moi de fermer les
+      applications lourdes avant de charger le modèle.
+    - Démarre le serveur local de LM Studio (écran « Model Server », interrupteur
+      Status sur « Running »), à l'adresse http://127.0.0.1:1234/v1.
+    - Lance « hermes model », choisis le fournisseur intégré « LM Studio », puis
+      ce modèle. Teste-le sur une petite tâche qui utilise un outil.
+    - Sois franc : un modèle de 4 milliards de paramètres reste limité comme
+      agent. S'il est trop lent ou se trompe souvent d'outil, propose-moi de
+      passer Anthropic en modèle principal et de garder le local pour le simple.
+    Variante, seulement si la voie LM Studio échoue : le moteur intégré de Hermes
+    sait aussi utiliser la puce Arc (moteur Vulkan pour Windows épinglé dans
+    pm/lock.json), avec un petit GGUF cherché sur Hugging Face depuis « hermes model ».
 H4. Secours : « hermes fallback add », fournisseur Anthropic. Je saisis ma clé
     moi-même dans l'invite. Puis « hermes fallback check ».
 H5. Sécurité et liste blanche : fusionne hermes/config-liste-blanche.yaml dans

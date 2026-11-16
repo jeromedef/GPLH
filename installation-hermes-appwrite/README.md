@@ -40,7 +40,10 @@ Si la demande de fusion (pull request) a déjà été acceptée, ne tapez pas `g
 
 ## Vos choix, déjà intégrés au prompt
 
-- **Hermes** : installation Windows native ; modèle local (candidat probable : Qwen3.6 35B-A3B, que l'estimateur de Hermes confirmera) avec Anthropic en secours ; usage général ; terminal seulement, sans gateway.
+- **Hermes** : installation Windows native, pour un usage général, en terminal seulement (sans gateway).
+  - **Modèle local :** passe par **LM Studio**, déjà installé et vérifié sur la puce **Intel Arc 140T**. Le PC n'a pas de carte Nvidia.
+  - **Modèle choisi :** Qwen3 4B Instruct 2507 dans sa version d'origine, et non la version Heretic. Le contexte est fixé à 65 536 jetons, le minimum exigé par Hermes.
+  - **Secours :** Anthropic.
 - **Liste blanche** : 16 groupes et 26 outils, `computer_use` compris, choix confirmé en connaissance de cause. Approbation **manuelle** des commandes.
 - **Appwrite** : VPS vierge, sans Dokploy, DNS chez OVH, base PostgreSQL, HTTPS Let's Encrypt, SMTP Google Workspace, import Supabase et Firebase.
 - **Exploitation** : sauvegarde S3 en UE chaque nuit ; clé MCP limitée aux bases de données et aux fonctions.
