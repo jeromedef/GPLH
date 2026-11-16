@@ -26,15 +26,22 @@ irm https://claude.ai/install.ps1 | iex
 ```
 Fermez et rouvrez PowerShell, puis tapez `claude` pour vous connecter avec votre compte.
 
-**3. Récupérer ce dossier sur le PC** :
+**3. Récupérer ce dossier sur le PC.** Il se trouve sur la branche principale `main`.
+
+Si le dépôt n'est pas encore sur votre PC :
 ```powershell
 cd $HOME\Documents
 git clone https://github.com/jeromedef/GPLH.git
-cd GPLH
-git checkout claude/hermes-appwrite-setup-ruczf3
+cd GPLH\installation-hermes-appwrite
+```
+
+Si vous l'avez déjà cloné, mettez-le simplement à jour :
+```powershell
+cd $HOME\Documents\GPLH
+git checkout main
+git pull
 cd installation-hermes-appwrite
 ```
-Si la demande de fusion (pull request) a déjà été acceptée, ne tapez pas `git checkout ...` : le dossier est alors directement sur la branche principale.
 
 **4. Lancer Claude Code dans ce dossier** : tapez `claude`, puis copiez-collez le bloc de `PROMPT_CLAUDE_CODE_LOCAL.md`.
 
